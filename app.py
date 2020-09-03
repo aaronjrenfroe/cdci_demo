@@ -5,6 +5,7 @@ app = Flask(__name__)
 
 app.add_url_rule('/', 'home', model.home)
 app.add_url_rule('/hello-flask','hello_flask', model.hello_flask)
+app.add_url_rule('/test','hello_flask', model.home)
 
 if __name__ == '__main__':
   app.run(debug=True, host='0.0.0.0')
