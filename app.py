@@ -10,7 +10,7 @@ app.add_url_rule('/test','hello_flask', model.home)
 if __name__ == '__main__':
   app.run(debug=True, host='0.0.0.0')
 
-
+# random comment
 # Faster Java deployments
 # https://spring.io/blog/2018/11/08/spring-boot-in-a-container
 
