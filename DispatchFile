@@ -1,0 +1,58 @@
+#!mesosphere/dispatch-yaml:v0.3
+
+resource:
+  docker-image:
+    param:
+      digest: $(inputs.resources.docker-image.digest)
+      url: docker.io/onehot0001/helloflask:$(context.build.name)
+    type: image
+  helloflask-git:
+    param:
+      revision: $(context.git.commit)
+      url: $(context.git.url)
+    type: git
+  gitops-git:
+    param:
+      url: https://github.com/aaronjrenfroe/cicd-hello-flask-gitops
+    type: git
+
+task:
+  build:
+    inputs:
+    - helloflask-git
+    outputs:
+    - docker-image
+    steps:
+    - args:
+      - --destination=$(outputs.resources.docker-image.url)
+      - --context=/workspace/helloflask-git
+      - --oci-layout-path=/workspace/output/docker-image
+      - --dockerfile=/workspace/helloflask-git/Dockerfile
+      image: chhsiao/kaniko-executor
+      name: build-and-push
+      resources: {}
+  deploy:
+    inputs:
+    - docker-image
+    - gitops-git
+    steps:
+    - name: update-gitops-repo
+      image: mesosphere/update-gitops-repo:1.2.0
+      workingDir: /workspace/gitops-git
+      args:
+      - -git-revision=$(context.git.commit)
+      - -substitute=imageName=onehot0001/helloflask@$(inputs.resources.docker-image.digest)
+      - -scm-provider=github
+
+actions:
+- on:
+    pull_request: {}
+  tasks:
+  - build
+- on:
+    push:
+      branches:
+      - master
+  tasks:
+  - build
+  - deploy
