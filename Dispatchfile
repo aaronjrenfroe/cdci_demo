@@ -27,7 +27,7 @@ task:
       - --destination=$(outputs.resources.docker-image.url)
       - --context=/workspace/helloflask-git
       - --oci-layout-path=/workspace/output/docker-image
-      - --dockerfile=/workspace/helloflask-git/dockerfile
+      - --dockerfile=/workspace/helloflask-git/Dockerfile
       image: chhsiao/kaniko-executor
       name: build-and-push
       resources: {}
